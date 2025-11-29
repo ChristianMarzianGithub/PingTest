@@ -1,0 +1,272 @@
+Prompt for Codex — Ping Test Web App
+
+PROMPT START
+
+Build a complete Ping Test web application.
+
+Architecture
+
+Frontend: React + TypeScript + Vite
+
+Backend: Node.js (Express) or Python (FastAPI) — choose one and implement
+
+Backend must run the actual ping commands (ICMP), since browsers cannot do this
+
+Styling: TailwindCSS
+
+Provide Dockerfiles for both the frontend and backend
+
+Provide docker-compose.yml
+
+App must be deployable on GCP Cloud Run
+
+Clean, simple folder structure
+
+App Purpose
+
+The app must let users run ICMP ping tests against any hostname or IP address and display:
+
+reachable / unreachable
+
+packet loss
+
+min/avg/max/last latency
+
+jitter
+
+all individual ping times
+
+TTL
+
+IP resolution of the target
+
+Backend performs the ping; frontend just interacts with it.
+
+Core Features
+1. Single Ping Test
+
+User enters a hostname or IP.
+Backend runs a ping test (4 packets by default) and returns:
+
+{
+  "host": "google.com",
+  "ip": "142.250.185.14",
+  "packets_sent": 4,
+  "packets_received": 4,
+  "packet_loss": 0,
+  "min_ms": 12,
+  "avg_ms": 14,
+  "max_ms": 16,
+  "jitter": 4,
+  "times": [12, 14, 16, 14],
+  "ttl": 118
+}
+
+
+Handle both IPv4 and IPv6 automatically.
+
+2. Continuous Ping Mode
+
+Backend should support a streaming-like continuous ping (long-running test):
+
+Ping every second
+
+Limit to max 60 seconds
+
+Return:
+
+live average
+
+packet loss
+
+jitter
+
+running timeline of each second’s ping result
+
+Frontend should show:
+
+a real-time chart (latency over time)
+
+stop button
+
+summary after stopping
+
+3. DNS Resolution
+
+Before pinging, backend resolves the host:
+
+A
+
+AAAA
+
+CNAME
+
+Return resolved IP(s).
+
+4. Error Handling
+
+Return meaningful errors for:
+
+invalid host
+
+host unreachable
+
+timeout
+
+ICMP restricted
+
+backend OS not supporting ping
+
+Frontend Requirements
+Main UI
+
+Input: Hostname or IP
+
+Buttons:
+
+“Run Ping Test”
+
+“Start Continuous Ping”
+
+Display for single ping:
+
+summary card
+
+packet loss
+
+latency stats
+
+IP resolved
+
+TTL
+
+a list of individual ping times
+
+Continuous Ping UI
+
+live updating chart of latency
+
+colored status (UP/DOWN)
+
+running timer
+
+summary after stopping
+
+Other UI Features
+
+Dark/light mode toggle
+
+Local history:
+
+last 10 tested hosts
+
+Clickable examples:
+
+google.com
+
+cloudflare.com
+
+facebook.com
+
+Proper error messages
+
+Loading indicators
+
+Backend Requirements
+Endpoints
+1. GET /ping?host=example.com
+
+Runs a ping with 4 packets.
+
+Return JSON:
+
+{
+  "host": "...",
+  "ip": "...",
+  "packets_sent": 4,
+  "packets_received": 3,
+  "packet_loss": 25,
+  "min_ms": 42,
+  "avg_ms": 57,
+  "max_ms": 79,
+  "jitter": 14,
+  "times": [42, 79, 49],
+  "ttl": 120,
+  "dns": {
+    "A": [...],
+    "AAAA": [...],
+    "CNAME": [...]
+  }
+}
+
+2. GET /ping/continuous?host=example.com&duration=60
+
+Runs a 1 ping/sec continuous test.
+
+Return:
+
+{
+  "host": "example.com",
+  "ip": "93.184.216.34",
+  "duration": 60,
+  "timeline": [
+    { "sec": 1, "ms": 42 },
+    { "sec": 2, "ms": null }, // timeout
+    ...
+  ],
+  "summary": {
+    "packet_loss": 8.3,
+    "min_ms": 42,
+    "avg_ms": 61,
+    "max_ms": 112,
+    "jitter": 11
+  }
+}
+
+Implementation Notes
+
+Use OS ping command securely
+
+Timeout per ping: 1 second
+
+CORS enabled for frontend
+
+Reject hosts that are:
+
+empty
+
+malformed
+
+localhost or private IP ranges (for security)
+
+DevOps & Deliverables
+
+Provide:
+
+Full frontend implementation
+
+Full backend implementation
+
+Dockerfile for frontend
+
+Dockerfile for backend
+
+docker-compose.yml
+
+Tailwind config, Vite config, tsconfig
+
+README with:
+
+local setup
+
+Docker usage
+
+Cloud Run deployment
+
+continuous ping implementation details
+
+Unit tests for backend ping parser and DNS resolver
+
+TypeScript types everywhere
+
+PROMPT END
